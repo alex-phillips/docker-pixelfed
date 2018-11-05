@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -d "/config/storage" ]; then
+	mv /app/pixelfed/storage /config/storage
+fi
+rm -rf /app/pixelfed/storage > /dev/null 2>&1
+ln -s /config/storage /app/pixelfed/storage
+
+if [ ! -f "/config/.env" ]; then
+	touch /config/.env
+fi
+
+rm /app/pixelfed/.env > /dev/null 2>&1
+ln -s /config/.env /app/pixelfed/.env
+
+cd /app/pixelfed
+php artisan storage:link
+php artisan migrate --force
+
+# permissions
+chown -R abc:abc \
+	/app/pixelfed \
+	/config

@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+cd /app/pixelfed || exit
+
+exec \
+	s6-setuidgid abc /usr/bin/php artisan horizon
