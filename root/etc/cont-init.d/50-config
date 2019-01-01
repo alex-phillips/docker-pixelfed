@@ -1,17 +1,45 @@
 #!/usr/bin/with-contenv bash
 
-if [ ! -d "/config/storage" ]; then
-	mv /app/pixelfed/storage /config/storage
-fi
-rm -rf /app/pixelfed/storage > /dev/null 2>&1
-ln -s /config/storage /app/pixelfed/storage
+declare -A PIXELFED_CONF
+PIXELFED_CONF[APP_URL]=${APP_URL:-/}
+PIXELFED_CONF[APP_DOMAIN]=${APP_DOMAIN:-localhost}
+PIXELFED_CONF[DB_HOST]=${DB_HOST:-mysql}
+PIXELFED_CONF[DB_PORT]=${DB_PORT:-3306}
+PIXELFED_CONF[DB_DATABASE]=${DB_DATABASE:-pixelfed}
+PIXELFED_CONF[DB_USERNAME]=${DB_USERNAME:-root}
+PIXELFED_CONF[DB_PASSWORD]=${DB_PASSWORD:-}
+PIXELFED_CONF[REDIS_HOST]=${REDIS_HOST:-redis}
+PIXELFED_CONF[REDIS_PASSWORD]=${REDIS_PASSWORD:-null}
+PIXELFED_CONF[REDIS_PORT]=${REDIS_PORT:-6379}
+PIXELFED_CONF[MAIL_HOST]=${MAIL_HOST:-smtp.mailtrap.io}
+PIXELFED_CONF[MAIL_PORT]=${MAIL_PORT:-2525}
+PIXELFED_CONF[MAIL_USERNAME]=${MAIL_USERNAME:-null}
+PIXELFED_CONF[MAIL_PASSWORD]=${MAIL_PASSWORD:-null}
+PIXELFED_CONF[MAIL_ENCRYPTION]=${MAIL_ENCRYPTION:-null}
+PIXELFED_CONF[MAIL_FROM_ADDRESS]=${MAIL_FROM_ADDRESS:-pixelfed@example.com}
+PIXELFED_CONF[MAIL_FROM_NAME]=${MAIL_FROM_NAME:-Pixelfed}
 
-if [ ! -f "/config/.env" ]; then
-	touch /config/.env
+if [ ! -f "/config/env" ]; then
+	cp /defaults/env /app/pixelfed/.env
+	for KEY in "${!PIXELFED_CONF[@]}"; do \
+	if [[ ${PIXELFED_CONF[$KEY]} == "" ]]; then \
+	:
+	else sed -i 's|{{'$KEY'}}|'${PIXELFED_CONF[$KEY]}'|g' /app/pixelfed/.env
+	fi
+	done
+
+	php /app/pixelfed/artisan key:generate
+	mv /app/pixelfed/.env /config/env
 fi
 
 rm /app/pixelfed/.env > /dev/null 2>&1
-ln -s /config/.env /app/pixelfed/.env
+ln -s /config/env /app/pixelfed/.env
+
+[[ ! -e /config/storage ]] && \
+	mv /app/pixelfed/storage /config/storage
+
+rm -rf /app/pixelfed/storage > /dev/null 2>&1
+ln -s /config/storage /app/pixelfed/storage
 
 cd /app/pixelfed
 php artisan storage:link
