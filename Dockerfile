@@ -36,7 +36,7 @@ RUN \
  git clone https://github.com/pixelfed/pixelfed.git /app/pixelfed && \
  echo "**** install composer packages ****" && \
  cd /app/pixelfed && \
- /usr/bin/composer install --prefer-source --no-interaction && \
+ /usr/bin/composer install --no-dev --prefer-source --no-interaction && \
  echo "**** cleanup ****" && \
  apk del --purge \
     build-dependencies && \
