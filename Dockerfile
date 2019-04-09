@@ -19,6 +19,7 @@ RUN \
     ncurses \
     php7 \
     php7-bcmath \
+    php7-ctype \
     php7-curl \
     php7-dom \
     php7-exif \
@@ -36,7 +37,7 @@ RUN \
  git clone https://github.com/pixelfed/pixelfed.git /app/pixelfed && \
  echo "**** install composer packages ****" && \
  cd /app/pixelfed && \
- /usr/bin/composer install --no-dev --prefer-source --no-interaction && \
+ /usr/bin/composer install --no-dev --no-interaction && \
  echo "**** cleanup ****" && \
  apk del --purge \
     build-dependencies && \

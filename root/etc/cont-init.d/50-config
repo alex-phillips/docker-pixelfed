@@ -38,11 +38,11 @@ ln -s /config/env /app/pixelfed/.env
 cd /app/pixelfed
 
 [[ ! -e /config/storage ]] && \
-	php artisan storage:link && \
 	mv /app/pixelfed/storage /config/storage
 
 rm -rf /app/pixelfed/storage > /dev/null 2>&1
 ln -s /config/storage /app/pixelfed/storage
+php artisan storage:link
 
 php artisan migrate --force
 
