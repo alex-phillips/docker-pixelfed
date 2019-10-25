@@ -23,6 +23,7 @@ RUN \
     php7-curl \
     php7-dom \
     php7-exif \
+    php7-intl \
     php7-gd \
     php7-iconv \
     php7-json \
